@@ -3,11 +3,11 @@
 Use this checklist to cover the Operating Systems concepts most commonly asked in software engineering interviews, especially around process management, memory, scheduling, synchronization, and file systems.[cite:4][cite:7]
 
 ## Core Foundations
-- [ ] What an operating system does
-- [ ] Types of operating systems: batch, time-sharing, distributed, real-time, multitasking
-- [ ] User mode vs kernel mode
-- [ ] Kernel basics: monolithic kernel, microkernel, modular kernel
-- [ ] System calls and traps
+-  What an operating system does
+-  Types of operating systems: batch, time-sharing, distributed, real-time, multitasking
+-  User mode vs kernel mode
+-  Kernel basics: monolithic kernel, microkernel, modular kernel
+-  System calls and traps
 - [ ] Interrupts and context switching
 - [ ] Boot process basics
 
