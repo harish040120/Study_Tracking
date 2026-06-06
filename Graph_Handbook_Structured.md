@@ -232,22 +232,26 @@ for (int neighbor : graph.get(0)) {
 Map<Integer, List<Integer>> graph = new HashMap<>();
 
 // Add edge u → v
-void addEdge(int u, int v) {
+static void addEdge(Map<Integer, List<Integer>> graph, int u, int v) {
     graph.computeIfAbsent(u, k -> new ArrayList<>()).add(v);
     graph.computeIfAbsent(v, k -> new ArrayList<>()).add(u); // undirected
 }
 
 // Access neighbors
-List<Integer> neighbors = graph.getOrDefault(node, new ArrayList<>());
+static List<Integer> getNeighbors(Map<Integer, List<Integer>> graph, int node) {
+    return graph.getOrDefault(node, new ArrayList<>());
+}
 ```
 
 ### Method 3: Build from Edge List Input (Very Common in LC)
 
 ```java
 // Input: int[][] edges = {{0,1},{0,2},{1,3},{2,3}};  n = 4
-List<List<Integer>> buildGraph(int n, int[][] edges) {
+static List<List<Integer>> buildGraph(int n, int[][] edges) {
     List<List<Integer>> graph = new ArrayList<>();
-    for (int i = 0; i < n; i++) graph.add(new ArrayList<>());
+    for (int i = 0; i < n; i++) {
+        graph.add(new ArrayList<>());
+    }
     for (int[] edge : edges) {
         int u = edge[0], v = edge[1];
         graph.get(u).add(v);
@@ -261,12 +265,19 @@ List<List<Integer>> buildGraph(int n, int[][] edges) {
 
 ```java
 // Each entry: [neighbor, weight]
-List<List<int[]>> graph = new ArrayList<>();
-for (int i = 0; i < n; i++) graph.add(new ArrayList<>());
+static List<List<int[]>> buildWeightedGraph(int n, int[][] edges) {
+    List<List<int[]>> graph = new ArrayList<>();
+    for (int i = 0; i < n; i++) {
+        graph.add(new ArrayList<>());
+    }
 
-// Add weighted edge u → v with weight w
-graph.get(u).add(new int[]{v, w});
-graph.get(v).add(new int[]{u, w}); // for undirected
+    for (int[] edge : edges) {
+        int u = edge[0], v = edge[1], w = edge[2];
+        graph.get(u).add(new int[]{v, w});
+        graph.get(v).add(new int[]{u, w}); // for undirected
+    }
+    return graph;
+}
 ```
 
 ---
@@ -312,7 +323,7 @@ dist[src] = 0;
 
 // ── PRIORITY QUEUE FOR DIJKSTRA ───────────────────────────────
 PriorityQueue<int[]> pq =
-    new PriorityQueue<>((a, b) -> a[1] - b[1]); // sort by distance
+    new PriorityQueue<>((a, b) -> Integer.compare(a[1], b[1])); // sort by distance
 pq.offer(new int[]{node, distance});
 int[] curr = pq.poll();
 int node = curr[0], dist = curr[1];
@@ -365,29 +376,26 @@ Order: 0 → 1 → 3 → 2 → 4
 ### Recursive DFS (Most Common)
 
 ```java
-boolean[] visited;
-List<List<Integer>> graph;
-
-void dfs(int node) {
+static void dfs(int node, boolean[] visited, List<List<Integer>> graph) {
     visited[node] = true;
     System.out.print(node + " "); // PROCESS node here
 
     for (int neighbor : graph.get(node)) {
         if (!visited[neighbor]) {
-            dfs(neighbor); // recurse deeper
+            dfs(neighbor, visited, graph); // recurse deeper
         }
     }
 }
 
 // HOW TO CALL:
-// visited = new boolean[n];
-// dfs(0); // start from node 0
+// boolean[] visited = new boolean[n];
+// dfs(0, visited, graph); // start from node 0
 ```
 
 ### Iterative DFS (Using explicit stack)
 
 ```java
-void dfsIterative(int start, List<List<Integer>> graph) {
+static void dfsIterative(int start, List<List<Integer>> graph) {
     boolean[] visited = new boolean[graph.size()];
     Deque<Integer> stack = new ArrayDeque<>();
 
@@ -412,8 +420,8 @@ void dfsIterative(int start, List<List<Integer>> graph) {
 ### DFS to Count Nodes in Component
 
 ```java
-int countNodes(int start, boolean[] visited,
-               List<List<Integer>> graph) {
+static int countNodes(int start, boolean[] visited,
+                      List<List<Integer>> graph) {
     visited[start] = true;
     int count = 1; // count this node
 
@@ -472,7 +480,7 @@ Distances from 0:
 ### BFS Template
 
 ```java
-void bfs(int start, List<List<Integer>> graph) {
+static void bfs(int start, List<List<Integer>> graph) {
     int n = graph.size();
     boolean[] visited = new boolean[n];
     Queue<Integer> q = new LinkedList<>();
@@ -499,7 +507,7 @@ void bfs(int start, List<List<Integer>> graph) {
 ### BFS with Distance Tracking
 
 ```java
-int[] bfsDistance(int start, List<List<Integer>> graph) {
+static int[] bfsDistance(int start, List<List<Integer>> graph) {
     int n = graph.size();
     int[] dist = new int[n];
     Arrays.fill(dist, -1); // -1 = not visited
@@ -526,7 +534,7 @@ int[] bfsDistance(int start, List<List<Integer>> graph) {
 ### BFS Level by Level (Important Pattern)
 
 ```java
-void bfsLevelByLevel(int start, List<List<Integer>> graph) {
+static void bfsLevelByLevel(int start, List<List<Integer>> graph) {
     boolean[] visited = new boolean[graph.size()];
     Queue<Integer> q = new LinkedList<>();
     q.offer(start);
@@ -604,10 +612,10 @@ Node (1,1) neighbors: (0,1), (2,1), (1,0), (1,2)
 ### Standard Directions Setup
 
 ```java
-int[][] dirs = {{-1,0},{1,0},{0,-1},{0,1}}; // up, down, left, right
+static final int[][] DIRS = {{-1,0},{1,0},{0,-1},{0,1}}; // up, down, left, right
 
 // Check if valid cell
-boolean inBounds(int i, int j, int rows, int cols) {
+static boolean inBounds(int i, int j, int rows, int cols) {
     return i >= 0 && i < rows && j >= 0 && j < cols;
 }
 ```
@@ -616,7 +624,7 @@ boolean inBounds(int i, int j, int rows, int cols) {
 
 ```java
 // NUMBER OF ISLANDS (LC 200) — classic grid DFS
-int numIslands(char[][] grid) {
+static int numIslands(char[][] grid) {
     int rows = grid.length, cols = grid[0].length;
     int count = 0;
 
@@ -631,7 +639,7 @@ int numIslands(char[][] grid) {
     return count;
 }
 
-void dfs(char[][] grid, int i, int j) {
+static void dfs(char[][] grid, int i, int j) {
     // Out of bounds OR water OR already visited
     if (i < 0 || i >= grid.length) return;
     if (j < 0 || j >= grid[0].length) return;
@@ -650,7 +658,7 @@ void dfs(char[][] grid, int i, int j) {
 
 ```java
 // SHORTEST PATH IN BINARY MATRIX (LC 1091)
-int shortestPath(int[][] grid) {
+static int shortestPathBinaryMatrix(int[][] grid) {
     int n = grid.length;
     if (grid[0][0] == 1 || grid[n-1][n-1] == 1) return -1;
 
@@ -687,17 +695,18 @@ Example: multiple rotten oranges rotting neighbors at the same time.
 
 ```java
 // ROTTING ORANGES (LC 994)
-int orangesRotting(int[][] grid) {
+static int orangesRotting(int[][] grid) {
     int m = grid.length, n = grid[0].length;
     Queue<int[]> q = new LinkedList<>();
     int fresh = 0;
 
     // ADD ALL rotten oranges as starting points
-    for (int i = 0; i < m; i++)
+    for (int i = 0; i < m; i++) {
         for (int j = 0; j < n; j++) {
             if (grid[i][j] == 2) q.offer(new int[]{i, j});
             if (grid[i][j] == 1) fresh++;
         }
+    }
 
     if (fresh == 0) return 0;
 
@@ -749,7 +758,7 @@ Count = 3
 ### Count Components using DFS
 
 ```java
-int countComponents(int n, int[][] edges) {
+static int countComponents(int n, int[][] edges) {
     List<List<Integer>> graph = new ArrayList<>();
     for (int i = 0; i < n; i++) graph.add(new ArrayList<>());
 
@@ -771,7 +780,7 @@ int countComponents(int n, int[][] edges) {
     return components;
 }
 
-void dfs(int node, boolean[] visited, List<List<Integer>> graph) {
+static void dfs(int node, boolean[] visited, List<List<Integer>> graph) {
     visited[node] = true;
     for (int neighbor : graph.get(node)) {
         if (!visited[neighbor]) dfs(neighbor, visited, graph);
@@ -818,7 +827,7 @@ Has cycle:          No cycle (tree):
 Key idea: in an undirected graph, when doing DFS, if you visit a node that is ALREADY visited AND it is NOT the parent you came from → CYCLE exists.
 
 ```java
-boolean hasCycle(int n, int[][] edges) {
+static boolean hasCycle(int n, int[][] edges) {
     List<List<Integer>> graph = new ArrayList<>();
     for (int i = 0; i < n; i++) graph.add(new ArrayList<>());
     for (int[] e : edges) {
@@ -836,8 +845,8 @@ boolean hasCycle(int n, int[][] edges) {
     return false;
 }
 
-boolean dfsHasCycle(int node, int parent, boolean[] visited,
-                    List<List<Integer>> graph) {
+static boolean dfsHasCycle(int node, int parent, boolean[] visited,
+                           List<List<Integer>> graph) {
     visited[node] = true;
 
     for (int neighbor : graph.get(node)) {
@@ -855,8 +864,8 @@ boolean dfsHasCycle(int node, int parent, boolean[] visited,
 ### Method 2: BFS with Parent Tracking
 
 ```java
-boolean hasCycleBFS(int start, boolean[] visited,
-                    List<List<Integer>> graph) {
+static boolean hasCycleBFS(int start, boolean[] visited,
+                           List<List<Integer>> graph) {
     Queue<int[]> q = new LinkedList<>(); // [node, parent]
     q.offer(new int[]{start, -1});
     visited[start] = true;
@@ -900,7 +909,7 @@ Directed cycle:    No cycle (DAG):
 ### DFS with Recursion Stack
 
 ```java
-boolean hasCycleDirected(int n, int[][] edges) {
+static boolean hasCycleDirected(int n, int[][] edges) {
     List<List<Integer>> graph = new ArrayList<>();
     for (int i = 0; i < n; i++) graph.add(new ArrayList<>());
     for (int[] e : edges) graph.get(e[0]).add(e[1]);
@@ -916,8 +925,8 @@ boolean hasCycleDirected(int n, int[][] edges) {
     return false;
 }
 
-boolean dfsCycle(int node, boolean[] visited, boolean[] inStack,
-                 List<List<Integer>> graph) {
+static boolean dfsCycle(int node, boolean[] visited, boolean[] inStack,
+                        List<List<Integer>> graph) {
     visited[node] = true;
     inStack[node] = true; // entering this node's path
 
@@ -939,14 +948,18 @@ boolean dfsCycle(int node, boolean[] visited, boolean[] inStack,
 If topological sort using BFS visits fewer nodes than total → cycle exists.
 
 ```java
-boolean hasCycleBFS(int n, List<List<Integer>> graph) {
+static boolean hasCycleBFS(int n, List<List<Integer>> graph) {
     int[] indegree = new int[n];
-    for (int u = 0; u < n; u++)
-        for (int v : graph.get(u)) indegree[v]++;
+    for (int u = 0; u < n; u++) {
+        for (int v : graph.get(u)) {
+            indegree[v]++;
+        }
+    }
 
     Queue<Integer> q = new LinkedList<>();
-    for (int i = 0; i < n; i++)
+    for (int i = 0; i < n; i++) {
         if (indegree[i] == 0) q.offer(i);
+    }
 
     int visited = 0;
     while (!q.isEmpty()) {
@@ -984,7 +997,7 @@ Bipartite:          NOT Bipartite:
 ### BFS Coloring
 
 ```java
-boolean isBipartite(int[][] graph) {
+static boolean isBipartite(int[][] graph) {
     int n = graph.length;
     int[] color = new int[n]; // 0=uncolored, 1=red, -1=blue
     // graph[i] = list of neighbors of i (given as adjacency list)
@@ -1061,7 +1074,7 @@ Another valid: 5, 4, 2, 0, 3, 1
 5. If result has all N nodes → valid topo sort. Else → cycle exists.
 
 ```java
-List<Integer> topoSort(int n, int[][] edges) {
+static List<Integer> topoSort(int n, int[][] edges) {
     List<List<Integer>> graph = new ArrayList<>();
     for (int i = 0; i < n; i++) graph.add(new ArrayList<>());
 
@@ -1099,7 +1112,7 @@ List<Integer> topoSort(int n, int[][] edges) {
 ### Kahn's for Course Schedule (LC 207)
 
 ```java
-boolean canFinish(int numCourses, int[][] prerequisites) {
+static boolean canFinish(int numCourses, int[][] prerequisites) {
     List<List<Integer>> graph = new ArrayList<>();
     for (int i = 0; i < numCourses; i++) graph.add(new ArrayList<>());
 
@@ -1133,7 +1146,7 @@ boolean canFinish(int numCourses, int[][] prerequisites) {
 In DFS postorder: add a node to result AFTER all its descendants are processed. Then reverse the result.
 
 ```java
-List<Integer> topoSortDFS(int n, List<List<Integer>> graph) {
+static List<Integer> topoSortDFS(int n, List<List<Integer>> graph) {
     boolean[] visited = new boolean[n];
     Deque<Integer> stack = new ArrayDeque<>();
 
@@ -1148,8 +1161,8 @@ List<Integer> topoSortDFS(int n, List<List<Integer>> graph) {
     return result;
 }
 
-void dfsTopoSort(int node, boolean[] visited, Deque<Integer> stack,
-                 List<List<Integer>> graph) {
+static void dfsTopoSort(int node, boolean[] visited, Deque<Integer> stack,
+                        List<List<Integer>> graph) {
     visited[node] = true;
     for (int neighbor : graph.get(node)) {
         if (!visited[neighbor]) {
@@ -1181,91 +1194,107 @@ Think of it like a school social group system:
 ### Basic Implementation
 
 ```java
-int[] parent;
-int[] rank;
+static class UnionFind {
+    private final int[] parent;
+    private final int[] rank;
 
-void init(int n) {
-    parent = new int[n];
-    rank = new int[n];
-    for (int i = 0; i < n; i++) parent[i] = i; // each is its own leader
-}
-
-// Find root with PATH COMPRESSION
-// Path compression: make every node point directly to root
-int find(int x) {
-    if (parent[x] != x) {
-        parent[x] = find(parent[x]); // compress: point to root
+    public UnionFind(int n) {
+        parent = new int[n];
+        rank = new int[n];
+        for (int i = 0; i < n; i++) {
+            parent[i] = i; // each is its own leader
+        }
     }
-    return parent[x];
-}
 
-// Union by RANK
-// Rank: attach smaller tree under bigger tree (keeps tree flat)
-boolean union(int x, int y) {
-    int rootX = find(x);
-    int rootY = find(y);
-
-    if (rootX == rootY) return false; // already same group → cycle!
-
-    if (rank[rootX] < rank[rootY]) parent[rootX] = rootY;
-    else if (rank[rootX] > rank[rootY]) parent[rootY] = rootX;
-    else {
-        parent[rootY] = rootX;
-        rank[rootX]++;
+    // Find root with PATH COMPRESSION
+    // Path compression: make every node point directly to root
+    public int find(int x) {
+        if (parent[x] != x) {
+            parent[x] = find(parent[x]); // compress: point to root
+        }
+        return parent[x];
     }
-    return true; // successfully merged
-}
 
-boolean connected(int x, int y) {
-    return find(x) == find(y);
+    // Union by RANK
+    // Rank: attach smaller tree under bigger tree (keeps tree flat)
+    public boolean union(int x, int y) {
+        int rootX = find(x);
+        int rootY = find(y);
+
+        if (rootX == rootY) return false; // already same group → cycle!
+
+        if (rank[rootX] < rank[rootY]) {
+            parent[rootX] = rootY;
+        } else if (rank[rootX] > rank[rootY]) {
+            parent[rootY] = rootX;
+        } else {
+            parent[rootY] = rootX;
+            rank[rootX]++;
+        }
+        return true; // successfully merged
+    }
+
+    public boolean connected(int x, int y) {
+        return find(x) == find(y);
+    }
 }
 ```
 
 ### Union Find — Complete Class
 
 ```java
-class UnionFind {
-    int[] parent, rank;
-    int components; // track number of components
+static class UnionFindComplete {
+    private final int[] parent;
+    private final int[] rank;
+    private int components; // track number of components
 
-    UnionFind(int n) {
+    public UnionFindComplete(int n) {
         parent = new int[n];
         rank = new int[n];
         components = n;
-        for (int i = 0; i < n; i++) parent[i] = i;
+        for (int i = 0; i < n; i++) {
+            parent[i] = i;
+        }
     }
 
-    int find(int x) {
-        if (parent[x] != x) parent[x] = find(parent[x]);
+    public int find(int x) {
+        if (parent[x] != x) {
+            parent[x] = find(parent[x]);
+        }
         return parent[x];
     }
 
-    boolean union(int x, int y) {
+    public boolean union(int x, int y) {
         int px = find(x), py = find(y);
         if (px == py) return false;
 
-        if (rank[px] < rank[py]) parent[px] = py;
-        else if (rank[px] > rank[py]) parent[py] = px;
-        else { parent[py] = px; rank[px]++; }
+        if (rank[px] < rank[py]) {
+            parent[px] = py;
+        } else if (rank[px] > rank[py]) {
+            parent[py] = px;
+        } else {
+            parent[py] = px;
+            rank[px]++;
+        }
 
         components--;
         return true;
     }
 
-    boolean connected(int x, int y) {
+    public boolean connected(int x, int y) {
         return find(x) == find(y);
     }
 
-    int getComponents() { return components; }
+    public int getComponents() { return components; }
 }
 ```
 
 ### Union Find — Number of Provinces (LC 547)
 
 ```java
-int findCircleNum(int[][] isConnected) {
+static int findCircleNum(int[][] isConnected) {
     int n = isConnected.length;
-    UnionFind uf = new UnionFind(n);
+    UnionFindComplete uf = new UnionFindComplete(n);
 
     for (int i = 0; i < n; i++) {
         for (int j = i + 1; j < n; j++) {
@@ -1290,7 +1319,7 @@ When building a graph edge by edge, if you try to union two nodes that already h
 ```java
 // REDUNDANT CONNECTION (LC 684)
 // Find the edge that creates a cycle in undirected graph
-int[] findRedundantConnection(int[][] edges) {
+static int[] findRedundantConnection(int[][] edges) {
     int n = edges.length;
     UnionFind uf = new UnionFind(n + 1); // nodes are 1-indexed
 
@@ -1334,7 +1363,7 @@ When ALL edges have cost = 1 (unweighted), BFS automatically finds the shortest 
 
 ```java
 // SHORTEST PATH — unweighted graph
-int shortestPath(List<List<Integer>> graph, int src, int dst) {
+static int shortestPath(List<List<Integer>> graph, int src, int dst) {
     boolean[] visited = new boolean[graph.size()];
     Queue<Integer> q = new LinkedList<>();
 
@@ -1367,8 +1396,8 @@ int shortestPath(List<List<Integer>> graph, int src, int dst) {
 Transform one word to another, changing one letter at a time. Each word = node. Two words connected if they differ by 1 letter.
 
 ```java
-int ladderLength(String beginWord, String endWord,
-                 List<String> wordList) {
+static int ladderLength(String beginWord, String endWord,
+                        List<String> wordList) {
     Set<String> wordSet = new HashSet<>(wordList);
     if (!wordSet.contains(endWord)) return 0;
 
@@ -1445,14 +1474,14 @@ Final distances: 0→0, 0→1=4, 0→2=1, 0→3=4
 ### Dijkstra Template
 
 ```java
-int[] dijkstra(int n, List<List<int[]>> graph, int src) {
+static int[] dijkstra(int n, List<List<int[]>> graph, int src) {
     int[] dist = new int[n];
     Arrays.fill(dist, Integer.MAX_VALUE);
     dist[src] = 0;
 
     // MinHeap: [node, distance]
     PriorityQueue<int[]> pq =
-        new PriorityQueue<>((a, b) -> a[1] - b[1]);
+        new PriorityQueue<>((a, b) -> Integer.compare(a[1], b[1]));
     pq.offer(new int[]{src, 0});
 
     while (!pq.isEmpty()) {
@@ -1480,7 +1509,7 @@ int[] dijkstra(int n, List<List<int[]>> graph, int src) {
 ### Network Delay Time (LC 743)
 
 ```java
-int networkDelayTime(int[][] times, int n, int k) {
+static int networkDelayTime(int[][] times, int n, int k) {
     // Build weighted graph
     List<List<int[]>> graph = new ArrayList<>();
     for (int i = 0; i <= n; i++) graph.add(new ArrayList<>());
@@ -1494,7 +1523,7 @@ int networkDelayTime(int[][] times, int n, int k) {
     dist[k] = 0;
 
     PriorityQueue<int[]> pq =
-        new PriorityQueue<>((a, b) -> a[1] - b[1]);
+        new PriorityQueue<>((a, b) -> Integer.compare(a[1], b[1]));
     pq.offer(new int[]{k, 0});
 
     while (!pq.isEmpty()) {
@@ -1540,7 +1569,7 @@ Bellman-Ford finds shortest paths even when edges have NEGATIVE weights.
 (A path with N nodes has at most N-1 edges.)
 
 ```java
-int[] bellmanFord(int n, int[][] edges, int src) {
+static int[] bellmanFord(int n, int[][] edges, int src) {
     int[] dist = new int[n];
     Arrays.fill(dist, Integer.MAX_VALUE);
     dist[src] = 0;
@@ -1592,13 +1621,14 @@ Floyd-Warshall | Any           | All pairs SP       | O(V³)
 Finds shortest path between EVERY pair of nodes. O(V³) — only use for small graphs.
 
 ```java
-int[][] floydWarshall(int n, int[][] graph) {
+static int[][] floydWarshall(int n, int[][] graph) {
     // graph[i][j] = weight from i to j (INF if no edge)
     int[][] dist = new int[n][n];
 
     // Copy input
-    for (int i = 0; i < n; i++)
+    for (int i = 0; i < n; i++) {
         dist[i] = Arrays.copyOf(graph[i], n);
+    }
 
     // Try every node as intermediate
     for (int k = 0; k < n; k++) {
@@ -1646,9 +1676,9 @@ All edges: 4+2+1+3=10        MST: 2+1+4=7 (minimum!)
 3. Stop when you have N-1 edges (all nodes connected)
 
 ```java
-int kruskalMST(int n, int[][] edges) {
+static int kruskalMST(int n, int[][] edges) {
     // Sort edges by weight
-    Arrays.sort(edges, (a, b) -> a[2] - b[2]);
+    Arrays.sort(edges, (a, b) -> Integer.compare(a[2], b[2]));
 
     UnionFind uf = new UnionFind(n);
     int totalCost = 0;
@@ -1676,11 +1706,11 @@ int kruskalMST(int n, int[][] edges) {
 3. Repeat until all nodes are in MST
 
 ```java
-int primMST(int n, List<List<int[]>> graph) {
+static int primMST(int n, List<List<int[]>> graph) {
     boolean[] inMST = new boolean[n];
     // MinHeap: [cost, node]
     PriorityQueue<int[]> pq =
-        new PriorityQueue<>((a, b) -> a[0] - b[0]);
+        new PriorityQueue<>((a, b) -> Integer.compare(a[0], b[0]));
     pq.offer(new int[]{0, 0}); // start from node 0 with cost 0
     int totalCost = 0;
 
@@ -1707,7 +1737,7 @@ int primMST(int n, List<List<int[]>> graph) {
 ### Min Cost to Connect All Points (LC 1584)
 
 ```java
-int minCostConnectPoints(int[][] points) {
+static int minCostConnectPoints(int[][] points) {
     int n = points.length;
     // Distance between any two points = Manhattan distance
     // |x1-x2| + |y1-y2|
@@ -1804,10 +1834,11 @@ List<List<int[]>> g = new ArrayList<>();
 g.get(u).add(new int[]{v, w});
 
 // ── DFS RECURSIVE ─────────────────────────────────────────────
-void dfs(int node, boolean[] visited, List<List<Integer>> g) {
+static void dfs(int node, boolean[] visited, List<List<Integer>> g) {
     visited[node] = true;
-    for (int nb : g.get(node))
+    for (int nb : g.get(node)) {
         if (!visited[nb]) dfs(nb, visited, g);
+    }
 }
 
 // ── BFS ───────────────────────────────────────────────────────
@@ -1815,13 +1846,14 @@ Queue<Integer> q = new LinkedList<>();
 q.offer(start); visited[start] = true;
 while (!q.isEmpty()) {
     int node = q.poll();
-    for (int nb : g.get(node))
+    for (int nb : g.get(node)) {
         if (!visited[nb]) { visited[nb]=true; q.offer(nb); }
+    }
 }
 
 // ── GRID DIRECTIONS ───────────────────────────────────────────
-int[][] dirs4 = {{-1,0},{1,0},{0,-1},{0,1}};
-int[][] dirs8 = {{-1,-1},{-1,0},{-1,1},{0,-1},
+static final int[][] DIRS4 = {{-1,0},{1,0},{0,-1},{0,1}};
+static final int[][] DIRS8 = {{-1,-1},{-1,0},{-1,1},{0,-1},
                  {0,1},{1,-1},{1,0},{1,1}};
 
 // ── BOUNDS CHECK ──────────────────────────────────────────────
@@ -1830,16 +1862,17 @@ if (r<0||r>=rows||c<0||c>=cols) continue;
 // ── DIJKSTRA ──────────────────────────────────────────────────
 int[] dist = new int[n]; Arrays.fill(dist, Integer.MAX_VALUE);
 dist[src] = 0;
-PriorityQueue<int[]> pq = new PriorityQueue<>((a,b)->a[1]-b[1]);
+PriorityQueue<int[]> pq = new PriorityQueue<>((a,b)->Integer.compare(a[1], b[1]));
 pq.offer(new int[]{src, 0});
 while (!pq.isEmpty()) {
     int[] cur = pq.poll();
     if (cur[1] > dist[cur[0]]) continue; // skip stale
-    for (int[] e : g.get(cur[0]))
+    for (int[] e : g.get(cur[0])) {
         if (dist[cur[0]]+e[1] < dist[e[0]]) {
             dist[e[0]] = dist[cur[0]]+e[1];
             pq.offer(new int[]{e[0], dist[e[0]]});
         }
+    }
 }
 
 // ── KAHN'S TOPO SORT ──────────────────────────────────────────
@@ -1850,8 +1883,9 @@ for (int i=0; i<n; i++) if (indegree[i]==0) q.offer(i);
 List<Integer> order = new ArrayList<>();
 while (!q.isEmpty()) {
     int node = q.poll(); order.add(node);
-    for (int nb : g.get(node))
+    for (int nb : g.get(node)) {
         if (--indegree[nb] == 0) q.offer(nb);
+    }
 }
 boolean hasCycle = order.size() != n;
 
