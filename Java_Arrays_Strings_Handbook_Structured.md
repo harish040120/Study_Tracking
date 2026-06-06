@@ -283,7 +283,7 @@ while (left < right) {
 ### Example: Reverse String In-Place
 
 ```java
-public void reverseString(char[] s) {
+public static void reverseString(char[] s) {
     int left = 0;
     int right = s.length - 1;
 
@@ -326,7 +326,7 @@ If sum was greater than target, move right pointer left to decrease sum.
 ```java
 // Find two numbers that sum to target in a sorted array
 // Returns indices (1-indexed) or [-1, -1] if not found
-public int[] twoSum(int[] numbers, int target) {
+public static int[] twoSum(int[] numbers, int target) {
     int left = 0;
     int right = numbers.length - 1;
 
@@ -350,7 +350,7 @@ public int[] twoSum(int[] numbers, int target) {
 
 ```java
 // Find all unique triplets that sum to zero
-public List<List<Integer>> threeSum(int[] nums) {
+public static List<List<Integer>> threeSum(int[] nums) {
     List<List<Integer>> result = new ArrayList<>();
     Arrays.sort(nums); // Sort first
 
@@ -410,7 +410,7 @@ They will meet inside the cycle if one exists.
 ```java
 // Find the duplicate number in an array of size n+1 with numbers 1 to n
 // Treat array values as pointers/indexes. Duplicate means a cycle exists.
-public int findDuplicate(int[] nums) {
+public static int findDuplicate(int[] nums) {
     // Phase 1: Detect if cycle exists
     int slow = nums[0];
     int fast = nums[0];
@@ -443,7 +443,7 @@ public int findDuplicate(int[] nums) {
 
 ```java
 // Container With Most Water
-public int maxArea(int[] height) {
+public static int maxArea(int[] height) {
     int left = 0;
     int right = height.length - 1;
     int maxWater = 0;
@@ -481,7 +481,7 @@ Continue until left >= right.
 
 ```java
 // Trapping Rainwater - Uses two pointers from outside moving in
-public int trap(int[] height) {
+public static int trap(int[] height) {
     if (height == null || height.length <= 2) return 0;
 
     int left = 0, right = height.length - 1;
@@ -555,7 +555,7 @@ Maximum sum found: 39
 
 ```java
 // Sliding Window - Fixed Size k
-public int maxSumSubarrayOfSizeK(int[] arr, int k) {
+public static int maxSumSubarrayOfSizeK(int[] arr, int k) {
     if (arr == null || arr.length < k) return -1; // Or throw exception
 
     int windowSum = 0;
@@ -602,7 +602,7 @@ Keep expanding and shrinking, tracking the minimum valid size.
 ```java
 // Sliding Window - Variable Size (Find Minimum Window)
 // Example: Smallest subarray with sum >= target
-public int minSubArrayLen(int target, int[] nums) {
+public static int minSubArrayLen(int target, int[] nums) {
     int minLength = Integer.MAX_VALUE;
     int windowSum = 0;
     int left = 0;
@@ -626,7 +626,7 @@ public int minSubArrayLen(int target, int[] nums) {
 
 ```java
 // Longest Substring Without Repeating Characters
-public int lengthOfLongestSubstring(String s) {
+public static int lengthOfLongestSubstring(String s) {
     Set<Character> windowChars = new HashSet<>();
     int left = 0;
     int maxLength = 0;
@@ -661,7 +661,7 @@ public int lengthOfLongestSubstring(String s) {
 ```java
 import java.util.*;
 
-public List<Integer> findAnagrams(String s, String p) {
+public static List<Integer> findAnagrams(String s, String p) {
     List<Integer> result = new ArrayList<>();
     if (s.length() < p.length()) return result;
 
@@ -711,7 +711,7 @@ public List<Integer> findAnagrams(String s, String p) {
 
 ```java
 // Minimum Window Substring - Variable Size, Needs All Chars
-public String minWindow(String s, String t) {
+public static String minWindow(String s, String t) {
     if (s.isEmpty() || t.isEmpty() || s.length() < t.length()) return "";
 
     Map<Character, Integer> tMap = new HashMap<>();
@@ -800,7 +800,7 @@ L=3, R=2 -> L>R -> Not Found, Return -1
 
 ```java
 // Standard Binary Search
-public int binarySearch(int[] arr, int target) {
+public static int binarySearch(int[] arr, int target) {
     int left = 0;
     int right = arr.length - 1;
 
@@ -848,7 +848,7 @@ L=4, R=5 -> Mid=4, arr[Mid]=0 -> Found!
 
 ```java
 // Search in Rotated Sorted Array
-public int search(int[] nums, int target) {
+public static int search(int[] nums, int target) {
     int left = 0;
     int right = nums.length - 1;
 
@@ -909,7 +909,7 @@ Check neighbors: arr[1]=2 < arr[2]=3 and arr[3]=1 < arr[3] -> Peak confirmed at 
 
 ```java
 // Find Peak Element
-public int findPeakElement(int[] nums) {
+public static int findPeakElement(int[] nums) {
     int left = 0;
     int right = nums.length - 1;
 
@@ -945,7 +945,7 @@ These are useful for finding ranges or inserting elements while maintaining orde
 
 ```java
 // Lower Bound: Index of first element >= target
-public int lowerBound(int[] arr, int target) {
+public static int lowerBound(int[] arr, int target) {
     int left = 0;
     int right = arr.length; // Note: right is exclusive
 
@@ -967,7 +967,7 @@ public int lowerBound(int[] arr, int target) {
 
 ```java
 // Upper Bound: Index of first element > target
-public int upperBound(int[] arr, int target) {
+public static int upperBound(int[] arr, int target) {
     int left = 0;
     int right = arr.length; // Note: right is exclusive
 
@@ -989,7 +989,7 @@ public int upperBound(int[] arr, int target) {
 
 ```java
 // Find First and Last Position of Element in Sorted Array
-public int[] searchRange(int[] nums, int target) {
+public static int[] searchRange(int[] nums, int target) {
     int first = lowerBound(nums, target);
     int last = upperBound(nums, target) - 1; // upper_bound gives index *after* last occurrence
 
@@ -1001,7 +1001,7 @@ public int[] searchRange(int[] nums, int target) {
 }
 
 // Lower Bound helper (as defined above)
-private int lowerBound(int[] arr, int target) {
+private static int lowerBound(int[] arr, int target) {
     int left = 0;
     int right = arr.length;
     while (left < right) {
@@ -1013,7 +1013,7 @@ private int lowerBound(int[] arr, int target) {
 }
 
 // Upper Bound helper (as defined above)
-private int upperBound(int[] arr, int target) {
+private static int upperBound(int[] arr, int target) {
     int left = 0;
     int right = arr.length;
     while (left < right) {
@@ -1078,7 +1078,7 @@ Calculated using prefix: prefix[5] - prefix[2] = 5 - 3 = 2. ✅
 
 ```java
 // Build Prefix Sum Array
-public int[] buildPrefixSum(int[] arr) {
+public static int[] buildPrefixSum(int[] arr) {
     int n = arr.length;
     int[] prefix = new int[n + 1]; // Size n+1 to handle edge case easily
 
@@ -1090,13 +1090,13 @@ public int[] buildPrefixSum(int[] arr) {
 }
 
 // Query Range Sum using Prefix Array
-public int queryRangeSum(int[] prefix, int left, int right) {
+public static int queryRangeSum(int[] prefix, int left, int right) {
     // Sum of arr[left..right] = prefix[right+1] - prefix[left]
     return prefix[right + 1] - prefix[left];
 }
 
 // Example Usage
-public void example() {
+public static void example() {
     int[] nums = {2, 1, -3, 4, 1, -2, 1, 5, -3};
     int[] prefix = buildPrefixSum(nums);
 
@@ -1111,7 +1111,7 @@ public void example() {
 
 ```java
 // Find number of subarrays that sum to K
-public int subarraySum(int[] nums, int k) {
+public static int subarraySum(int[] nums, int k) {
     Map<Integer, Integer> prefixCount = new HashMap<>();
     prefixCount.put(0, 1); // Handle subarrays starting from index 0
 
@@ -1146,7 +1146,7 @@ The difference array `diff` is used for efficiently applying range updates (addi
 
 ```java
 // Apply range updates efficiently using difference array
-public int[] applyRangeUpdates(int n, int[][] updates) {
+public static int[] applyRangeUpdates(int n, int[][] updates) {
     int[] diff = new int[n + 1]; // Extra space to handle j+1 safely
 
     for (int[] update : updates) {
@@ -1171,7 +1171,7 @@ public int[] applyRangeUpdates(int n, int[][] updates) {
 }
 
 // Example Usage
-public void example() {
+public static void example() {
     int n = 5;
     int[][] updates = {{1, 3, 2}, {2, 4, 3}, {0, 2, -1}};
     // Initial array: [0, 0, 0, 0, 0]
@@ -1211,7 +1211,7 @@ LPS[4] = 0 ("ABABC": no matching proper prefix/suffix)
 
 ```java
 // KMP Algorithm - Find all occurrences of pattern in text
-public List<Integer> kmpSearch(String text, String pattern) {
+public static List<Integer> kmpSearch(String text, String pattern) {
     List<Integer> result = new ArrayList<>();
     if (pattern.isEmpty()) return result;
 
@@ -1242,7 +1242,7 @@ public List<Integer> kmpSearch(String text, String pattern) {
 }
 
 // Compute LPS (Longest Proper Prefix which is also Suffix) array
-private int[] computeLPS(String pattern) {
+private static int[] computeLPS(String pattern) {
     int m = pattern.length();
     int[] lps = new int[m];
     int len = 0; // Length of previous longest prefix suffix
@@ -1281,7 +1281,7 @@ Bit manipulation can be used for specific problems involving arrays or strings, 
 
 ```java
 // Every element appears twice except one. Find the single one.
-public int singleNumber(int[] nums) {
+public static int singleNumber(int[] nums) {
     int result = 0;
     for (int num : nums) {
         result ^= num; // XOR all numbers
@@ -1294,7 +1294,7 @@ public int singleNumber(int[] nums) {
 
 ```java
 // Count the number of '1' bits in an integer
-public int hammingWeight(int n) {
+public static int hammingWeight(int n) {
     int count = 0;
     while (n != 0) {
         count += n & 1; // Check if last bit is 1
@@ -1304,7 +1304,7 @@ public int hammingWeight(int n) {
 }
 
 // Alternative: Brian Kernighan's algorithm (faster)
-public int hammingWeightBK(int n) {
+public static int hammingWeightBK(int n) {
     int count = 0;
     while (n != 0) {
         n &= (n - 1); // Removes the rightmost set bit
@@ -1318,7 +1318,7 @@ public int hammingWeightBK(int n) {
 
 ```java
 // Generate all possible subsets of an array using bit manipulation
-public List<List<Integer>> subsets(int[] nums) {
+public static List<List<Integer>> subsets(int[] nums) {
     List<List<Integer>> result = new ArrayList<>();
     int n = nums.length;
     int totalSubsets = 1 << n; // 2^n subsets
