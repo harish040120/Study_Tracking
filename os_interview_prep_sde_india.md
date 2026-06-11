@@ -8,8 +8,8 @@ Use this checklist to cover the Operating Systems concepts most commonly asked i
 -  User mode vs kernel mode
 -  Kernel basics: monolithic kernel, microkernel, modular kernel
 -  System calls and traps
-- [ ] Interrupts and context switching
-- [ ] Boot process basics
+-  Interrupts and context switching
+-  Boot process basics
 
 ## Processes and Threads
 - [ ] Program vs process
